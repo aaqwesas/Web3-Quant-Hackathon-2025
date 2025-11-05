@@ -1,0 +1,25 @@
+roostoo:
+  base_url: "https://mock-api.roostoo.com"
+  api_key: "REPLACE_ME"
+  api_secret: "REPLACE_ME"
+  timeout_sec: 10
+  min_request_interval_sec: 0.8
+
+bot:
+  symbols: ["BTC/USD", "ETH/USD"]
+  interval: "1m"
+  lookback: 200
+  loop_seconds: 60
+
+risk:
+  position_fraction: 0.01
+
+strategy:
+  rsi_period: 14
+  rsi_buy: 30
+  rsi_sell: 70
+  ema_fast: 21
+  ema_slow: 55
+  atr_period: 14
+  adx_period: 14
+  adx_trend_threshold: 22

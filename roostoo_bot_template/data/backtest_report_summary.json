@@ -1,0 +1,12 @@
+{
+  "total_trades": 20,
+  "wins": 13,
+  "losses": 7,
+  "win_rate": 0.65,
+  "avg_win": 214.09280989003662,
+  "avg_loss": -54.246674887086435,
+  "avg_pnl": 120.17399021804356,
+  "expectancy": 120.17399021804356,
+  "total_net_pnl": 2403.479804360871,
+  "avg_hold_seconds": 5797440.0
+}

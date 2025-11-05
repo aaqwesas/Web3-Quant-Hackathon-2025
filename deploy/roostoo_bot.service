@@ -1,0 +1,15 @@
+[Unit]
+Description=Roostoo trading bot (Docker)
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --rm --name roostoo_bot \
+  -e CONFIG_FROM_ENV=1 \
+  -e ROOSTOO_API_KEY=${ROOSTOO_API_KEY} \
+  -e ROOSTOO_API_SECRET=${ROOSTOO_API_SECRET} \
+  roostoo/bot:latest
+ExecStop=/usr/bin/docker stop roostoo_bot
+
+[Install]
+WantedBy=multi-user.target

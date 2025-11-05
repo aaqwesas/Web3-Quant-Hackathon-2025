@@ -1,0 +1,29 @@
+roostoo:
+  base_url: "https://api.roostoo.com"
+  api_key: "REPLACE_ME"
+  api_secret: "REPLACE_ME"
+  timeout_sec: 10
+  min_request_interval_sec: 0.8
+
+bot:
+  symbols: ["BTCUSDT", "ETHUSDT"]
+  interval: "1m"
+  lookback: 500
+  loop_seconds: 60
+
+risk:
+  position_fraction: 0.05
+  max_concurrent_positions: 2
+  stop_atr_mult: 2.5
+  take_atr_mult: 4.0
+  daily_loss_stop_pct: 0.05
+
+strategy:
+  rsi_period: 14
+  rsi_buy: 30
+  rsi_sell: 70
+  ema_fast: 21
+  ema_slow: 55
+  atr_period: 14
+  adx_period: 14
+  adx_trend_threshold: 22
