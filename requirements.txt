@@ -1,0 +1,6 @@
+pandas
+numpy
+requests
+PyYAML
+matplotlib
+plotly
