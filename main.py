@@ -63,6 +63,7 @@ def apply_delay[T, **P](func: Callable[P, T]) -> Callable[P, T]:
         return result
     return wrapper
 
+
 class Web3MeanReversionStrategy:
     def __init__(self, config: dict):
         self.config = config
@@ -198,6 +199,8 @@ class Web3MeanReversionStrategy:
             return TradeSignal.SELL
             
         return TradeSignal.HOLD
+    
+
     @apply_delay
     async def execute_trade(self, symbol: str, signal: TradeSignal):
         """Execute trade based on signal"""
