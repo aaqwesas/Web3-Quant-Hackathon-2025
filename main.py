@@ -13,10 +13,15 @@ import time
 import requests
 from datetime import datetime
 from functools import wraps
+from dotenv import load_dotenv
 
+
+load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
 
 class TradeSignal(Enum):
     BUY = "BUY"
@@ -81,8 +86,8 @@ class Web3MeanReversionStrategy:
         self.max_positions = config.get('max_positions', 10)
         self.max_daily_trades = config.get('max_daily_trades', 15)
         
-        # Initialize portfolio
-        self.total_equity = config.get('initial_capital', 50000)
+
+        self.total_equity = self.get_balance()
         self.available_cash = self.total_equity
         
         # Historical data cache
@@ -92,6 +97,22 @@ class Web3MeanReversionStrategy:
     # Core Strategy Methods
     # ------------------------------
 
+
+    def get_balance(self):
+        """Get wallet balances (RCL_TopLevelCheck)."""
+        url = f"{self.base_url}/v3/balance"
+        headers, payload, _ = self._get_signed_headers({})
+        try:
+            res = requests.get(url, headers=headers, params=payload)
+            res.raise_for_status()
+            res = res.json()["SpotWallet"]["USD"]["Free"]
+            return int(res)
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error getting balance: {e}")
+            print(f"Response text: {e.response.text if e.response else 'N/A'}")
+            return 50000
+        
     async def run_continuous_strategy(self, watchlist: list[str]):
         """Run strategy continuously every 5 minutes"""
         logger.info("Starting continuous strategy execution")
@@ -177,7 +198,7 @@ class Web3MeanReversionStrategy:
             return TradeSignal.SELL
             
         return TradeSignal.HOLD
-
+    @apply_delay
     async def execute_trade(self, symbol: str, signal: TradeSignal):
         """Execute trade based on signal"""
         market_data = await self.get_market_data([symbol])
@@ -196,20 +217,22 @@ class Web3MeanReversionStrategy:
                 
             result = self.submit_trade_order(symbol, 'BUY', units)
             
-            if result:
-                position = Position(
-                    symbol=symbol,
-                    entry_price=current_price,
-                    size=units,
-                    stop_loss=current_price * (1 - self.stop_loss_pct),
-                    take_profit_1=current_price * (1 + self.take_profit_1),
-                    take_profit_2=current_price * (1 + self.take_profit_2)
-                )
-                
-                self.positions[symbol] = position
-                self.available_cash -= cost
-                self.trade_count_today += 1
-                logger.info(f"Opened position in {symbol}: {units:.4f} units at ${current_price:.2f}")
+            if not result:
+                logger.error("Order failed")
+                return
+            position = Position(
+                symbol=symbol,
+                entry_price=current_price,
+                size=units,
+                stop_loss=current_price * (1 - self.stop_loss_pct),
+                take_profit_1=current_price * (1 + self.take_profit_1),
+                take_profit_2=current_price * (1 + self.take_profit_2)
+            )
+            
+            self.positions[symbol] = position
+            self.available_cash -= cost
+            self.trade_count_today += 1
+            logger.info(f"Opened position in {symbol}: {units:.4f} units at ${current_price:.2f}")
                 
         elif signal == TradeSignal.SELL:
             position = self.positions[symbol]
@@ -225,9 +248,10 @@ class Web3MeanReversionStrategy:
             
             result = self.submit_trade_order(symbol, 'SELL', sell_size)
             
-            if result:
-                self.available_cash += sell_size * current_price
-                logger.info(f"Closed position in {symbol}")
+            if not result:
+                logger.error("order failed")
+            self.available_cash += sell_size * current_price
+            logger.info(f"Closed position in {symbol}")
 
     # ------------------------------
     # Technical Analysis Methods
@@ -375,7 +399,6 @@ class Web3MeanReversionStrategy:
             'side': side.upper(),
             'type': "MARKET",
             'quantity': str(quantity),
-            'timestamp': str(int(time.time() * 1000))
         }
 
         headers, _, total_params = self._get_signed_headers(payload)
@@ -427,6 +450,10 @@ class Web3MeanReversionStrategy:
 # Main Execution
 # ------------------------------
 
+
+
+
+
 async def main():
     strategy_config = {
         'z_score_threshold': -1.75,
@@ -439,7 +466,6 @@ async def main():
         'take_profit_2': 0.12,
         'max_positions': 10,
         'max_daily_trades': 15,
-        'initial_capital': 50000
     }
     
     watchlist = ["BTC", "ETH", "BNB", "SOL", "ADA", "XRP", "DOT", "DOGE", "LTC", "MATIC"]
