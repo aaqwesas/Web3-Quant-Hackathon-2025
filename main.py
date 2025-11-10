@@ -55,14 +55,21 @@ class Position:
     take_profit_2: float
     half_sold: bool = False
 
-def apply_delay[T, **P](func: Callable[P, T]) -> Callable[P, T]:
+# def apply_delay[T, **P](func: Callable[P, T]) -> Callable[P, T]:
+#     @wraps(func)
+#     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+#         result = func(*args, **kwargs)
+#         time.sleep(1)
+#         return result
+#     return wrapper
+
+def apply_delay(func):
     @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+    def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
         time.sleep(1)
         return result
     return wrapper
-
 
 class Web3MeanReversionStrategy:
     def __init__(self, config: dict):
