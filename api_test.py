@@ -223,9 +223,9 @@ if __name__ == "__main__":
     print(get_pending_count())
 
     # Uncomment these to test trading actions:
-    # print(place_order("BTC", "BUY", 0.01, price=95000))  # LIMIT
-    print(place_order("BNB/USD", "BUY", 1))      
-    # print(place_order("BNB/USD", "SELL", 1))             # MARKET       
-    print(query_order(pair="BNB/USD", pending_only=False))
+    # print(place_order("BTC", "BUY", 0.001, price=95000))  # LIMIT
+    # print(place_order("BNB/USD", "BUY", 0.55667))      
+    # print(place_order("BNB/USD", "SELL"))             # MARKET       
+    # print(query_order(pair="BNB/USD", pending_only=False))
     # print(cancel_order(pair="BNB/USD"))
 

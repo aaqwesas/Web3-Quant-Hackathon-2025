@@ -200,6 +200,10 @@ class Web3MeanReversionStrategy:
             
         return TradeSignal.HOLD
     
+    def _get_timestamp(self):
+        """Return a 13-digit millisecond timestamp as string."""
+        return str(int(time.time() * 1000))
+    
 
     @apply_delay
     async def execute_trade(self, symbol: str, signal: TradeSignal):
@@ -394,27 +398,32 @@ class Web3MeanReversionStrategy:
 
     @apply_delay
     def submit_trade_order(self, pair_or_coin: str, side: str, quantity: float) -> bool:
-        """Place a MARKET order using Roostoo API"""
+        """
+        Place a LIMIT or MARKET order.
+        """
+        url = f"{self.base_url}/v3/place_order"
         pair = f"{pair_or_coin}/USD" if "/" not in pair_or_coin else pair_or_coin
+
 
         payload = {
             'pair': pair,
             'side': side.upper(),
             'type': "MARKET",
-            'quantity': str(quantity),
+            'quantity': f"{quantity:.1f}",
+            "timestamp": self._get_timestamp()
         }
 
         headers, _, total_params = self._get_signed_headers(payload)
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
         try:
-            url = f"{self.base_url}/v3/place_order"
             res = requests.post(url, headers=headers, data=total_params)
             res.raise_for_status()
-            logger.info(f"Order submitted: {side} {quantity} of {pair}")
+            print(res.json())
             return True
-        except Exception as e:
-            logger.error(f"Error placing order: {e}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error placing order: {e}")
+            print(f"Response text: {e.response.text if e.response else 'N/A'}")
             return False
 
     def _get_signed_headers(self, payload: dict):
@@ -471,7 +480,7 @@ async def main():
         'max_daily_trades': 15,
     }
     
-    watchlist = ["BTC", "ETH", "BNB", "SOL", "ADA", "XRP", "DOT", "DOGE", "LTC", "MATIC"]
+    watchlist = ["BTC", "ETH", "BNB", "SOL", "ADA", "XRP", "DOT", "ICP", "LTC", "ZEC"]
     
     strategy = Web3MeanReversionStrategy(strategy_config)
     await strategy.run_continuous_strategy(watchlist)
