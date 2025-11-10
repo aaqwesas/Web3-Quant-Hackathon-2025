@@ -335,7 +335,7 @@ class Web3MeanReversionStrategy:
         
         return market_data
 
-    async def _get_binance_ticker_data(self, session: aiohttp.ClientSession, symbol: str) -> MarketData | None:
+    async def _get_binance_ticker_data(self, session: aiohttp.ClientSession, symbol: str) -> MarketData:
         """Get individual symbol data from Binance"""
         binance_symbol = self._convert_to_binance_symbol(symbol)
         
