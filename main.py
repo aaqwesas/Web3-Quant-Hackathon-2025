@@ -311,9 +311,8 @@ class Web3MeanReversionStrategy:
         ema_condition = current['close'] > current['ema_5']
         z_score_improving = current['z_score'] > previous['z_score']
         z_score_threshold = current['z_score'] > self.z_score_reversal
-        green_candle = current['close'] > current['open']
         
-        return ema_condition and z_score_improving and z_score_threshold and green_candle
+        return ema_condition and z_score_improving and z_score_threshold 
 
     def calculate_position_size(self, current_price: float) -> float:
         """Calculate position size based on available equity"""
