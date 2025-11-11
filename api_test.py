@@ -2,13 +2,14 @@ import requests
 import time
 import hmac
 import hashlib
+import os
 from dotenv import load_dotenv
 load_dotenv()
 
 # --- API Configuration ---
 BASE_URL = "https://mock-api.roostoo.com"
-API_KEY = "JIwqJBZLhUaVWD7DHuSJAlGDsBaR4Oab2yyhHa4jxDGIbBW4dBzzbjpZyF7Svtoz"      # Replace with your actual API key
-SECRET_KEY = "X5A41nTLvmrXY3W91ffQgOeuAlLvUBQbcjdlNVRso0AOr7dAPz9kAcQ7rFDtdjKy"
+API_KEY = os.environ.get("ROOSTOO_API")     # Replace with your actual API key
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
 # ------------------------------
@@ -224,7 +225,7 @@ if __name__ == "__main__":
 
     # Uncomment these to test trading actions:
     # print(place_order("BTC", "BUY", 0.001, price=95000))  # LIMIT
-    # print(place_order("BNB/USD", "BUY", 0.55667))      
+    # print(place_order("BNB/USD", "BUY", 0.55))      
     # print(place_order("BNB/USD", "SELL"))             # MARKET       
     # print(query_order(pair="BNB/USD", pending_only=False))
     # print(cancel_order(pair="BNB/USD"))

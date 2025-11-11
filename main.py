@@ -335,7 +335,7 @@ class Web3MeanReversionStrategy:
         
         return market_data
 
-    async def _get_binance_ticker_data(self, session: aiohttp.ClientSession, symbol: str) -> MarketData:
+    async def _get_binance_ticker_data(self, session: aiohttp.ClientSession, symbol: str) -> MarketData | None:
         """Get individual symbol data from Binance"""
         binance_symbol = self._convert_to_binance_symbol(symbol)
         
@@ -356,7 +356,6 @@ class Web3MeanReversionStrategy:
                     close=float(data['lastPrice']),
                     volume_30d_avg=volume_30d_avg
                 )
-        return None
 
     async def get_historical_data(self, symbol: str, periods: int = 100) -> pd.DataFrame:
         """Get historical OHLC data from Binance"""
@@ -366,7 +365,7 @@ class Web3MeanReversionStrategy:
         
         binance_symbol = self._convert_to_binance_symbol(symbol)
         url = "https://api.binance.com/api/v3/klines"
-        params = {'symbol': binance_symbol, 'interval': '1h', 'limit': periods}
+        params = {'symbol': binance_symbol, 'interval': '15m', 'limit': periods}
         
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params) as response:
@@ -470,24 +469,21 @@ class Web3MeanReversionStrategy:
 # ------------------------------
 
 
-
-
-
 async def main():
     strategy_config = {
-        'z_score_threshold': -1.75,
-        'z_score_reversal': -1.5,
-        'volume_multiplier': 1.5,
-        'rsi_threshold': 30,
-        'position_size': 0.015,
-        'stop_loss_pct': 0.04,
-        'take_profit_1': 0.06,
-        'take_profit_2': 0.12,
-        'max_positions': 10,
-        'max_daily_trades': 15,
+        'z_score_threshold': -2.0,
+        'z_score_reversal': -1.0,
+        'volume_multiplier': 1.2,
+        'rsi_threshold': 25,
+        'position_size': 0.03,
+        'stop_loss_pct': 0.06,
+        'take_profit_1': 0.08,
+        'take_profit_2': 0.15,
+        'max_positions': 15,
+        'max_daily_trades': 25,
     }
     
-    watchlist = ["BTC", "ETH", "BNB", "SOL", "ADA", "XRP", "DOT", "ICP", "LTC", "ZEC"]
+    watchlist = ["BNB", "SOL", "ADA", "XRP", "DOT", "ICP", "LTC", "ZEC", "UNI", "TRUMP", "SUI"]
     
     strategy = Web3MeanReversionStrategy(strategy_config)
     await strategy.run_continuous_strategy(watchlist)
