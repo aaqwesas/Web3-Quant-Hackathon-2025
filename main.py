@@ -309,7 +309,7 @@ class Web3MeanReversionStrategy:
         previous = historical_data.iloc[-2]
         
         ema_condition = current['close'] > current['ema_5']
-        z_score_improving = current['z_score'] > previous['z_score']
+        z_score_improving = current['z_score'] > previous['z_score'] - 0.1 # allow some range
         z_score_threshold = current['z_score'] > self.z_score_reversal
         
         return ema_condition and z_score_improving and z_score_threshold 
