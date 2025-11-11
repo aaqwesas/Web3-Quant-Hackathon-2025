@@ -470,8 +470,8 @@ class Web3MeanReversionStrategy:
 
 async def main():
     strategy_config = {
-        'z_score_threshold': -2.0,
-        'z_score_reversal': -1.0,
+        'z_score_threshold': -1.5,
+        'z_score_reversal': -1.25,
         'volume_multiplier': 1.2,
         'rsi_threshold': 25,
         'position_size': 0.03,
